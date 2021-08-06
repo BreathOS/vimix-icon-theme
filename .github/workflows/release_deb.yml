@@ -1,0 +1,51 @@
+name: Build .deb
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Get the version
+        id: get_version
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF/refs\/tags\//}
+          echo ::set-output name=VERSION::$VERSION
+      
+      - name: "Pack to deb"
+        run: |
+          pkgname="breath-os-vimix-icon-theme-${{ steps.get_version.outputs.VERSION }}-amd64"
+          echo "::set-output name=pkgname::${pkgname}"
+          mkdir -p ${pkgname}/tmp/vimix-icon-theme
+          mv src ${pkgname}/tmp/vimix-icon-theme
+          mv links ${pkgname}/tmp/vimix-icon-theme
+          mv DEBIAN/ ${pkgname}
+          cd ${pkgname}
+          sudo apt install md5deep
+          md5deep -rl usr/ > ./DEBIAN/md5sums
+          cd DEBIAN
+          chmod 775 p*
+          sed -i "s/\${ver}/${{ steps.get_version.outputs.VERSION }}/" control
+          SIZE=$(du -s ../../${pkgname} | cut -f1)
+          sed -i "s/\${size}/${SIZE}/" control
+          cd ${{ github.workspace }}/
+          fakeroot dpkg-deb --build ${pkgname}
+
+      - name: Release .deb
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ github.workspace }}/*.deb
+          name: Breath OS Vimix icon theme ${{steps.get_version.outputs.VERSION}}
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
