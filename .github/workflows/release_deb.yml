@@ -29,6 +29,7 @@ jobs:
           mkdir -p ${pkgname}/tmp/vimix-icon-theme
           mv src ${pkgname}/tmp/vimix-icon-theme
           mv links ${pkgname}/tmp/vimix-icon-theme
+          mv install.sh ${pkgname}/tmp/vimix-icon-theme
           mv DEBIAN/ ${pkgname}
           cd ${pkgname}
           sudo apt install md5deep
