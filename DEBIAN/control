@@ -1,0 +1,11 @@
+Package: breath-os-vimix-iconpack
+Version: ${ver}
+Installed-Size: ${size}
+Maintainer: Roman Tolstosheyev <izobretatel777@mail.ru>
+Source: https://github.com/BreathOS/vimix-icon-theme
+Homepage: https://breathos.github.io/
+Architecture: amd64
+Priority: optional
+Description: Vimix Icon Theme
+
+
